@@ -19,6 +19,8 @@ logger = log.getLogger(__name__)
 
 
 def _get_transport_security() -> TransportSecuritySettings:
+    if os.environ.get("MINDSDB_MCP_DISABLE_TRANSPORT_SECURITY", "").lower() == "true":
+        return None
     default_hosts = ["localhost:*", "127.0.0.1:*"]
     env_hosts = os.environ.get("MINDSDB_MCP_ALLOWED_HOSTS", "")
     if env_hosts:
