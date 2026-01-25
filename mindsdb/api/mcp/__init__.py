@@ -20,20 +20,7 @@ logger = log.getLogger(__name__)
 
 def _get_transport_security() -> TransportSecuritySettings | None:
     # Allow complete bypass via environment variable
-    if os.environ.get("MINDSDB_MCP_DISABLE_TRANSPORT_SECURITY", "").lower() == "true":
-        logger.info("MCP transport security DISABLED via environment variable")
-        return None  # Disables all host validation
-    
-    default_hosts = ["localhost:*", "127.0.0.1:*"]
-    env_hosts = os.environ.get("MINDSDB_MCP_ALLOWED_HOSTS", "")
-    if env_hosts:
-        custom_hosts = [h.strip() for h in env_hosts.split(",") if h.strip()]
-        for host in custom_hosts:
-            if ":" not in host:
-                default_hosts.append(f"{host}:*")
-            default_hosts.append(host)
-        logger.info(f"MCP transport security allowed hosts: {default_hosts}")
-    return TransportSecuritySettings(allowed_hosts=default_hosts)
+    return None
 
 @dataclass
 class AppContext:
