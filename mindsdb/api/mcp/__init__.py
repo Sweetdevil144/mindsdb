@@ -17,9 +17,21 @@ from mindsdb.utilities import log
 
 logger = log.getLogger(__name__)
 
+# Monkey-patch MCP SSE transport to disable host validation
+try:
+    from mcp.server import sse as mcp_sse
+    if hasattr(mcp_sse, 'SseServerTransport'):
+        _original_init = mcp_sse.SseServerTransport.__init__
+        def _patched_init(self, *args, **kwargs):
+            _original_init(self, *args, **kwargs)
+            self._is_valid_host = lambda host: True
+        mcp_sse.SseServerTransport.__init__ = _patched_init
+        logger.info("MCP SSE host validation disabled via monkey-patch")
+except Exception as e:
+    logger.warning(f"Could not patch MCP SSE transport: {e}")
+
 
 def _get_transport_security() -> TransportSecuritySettings | None:
-    # Allow complete bypass via environment variable
     return None
 
 @dataclass
